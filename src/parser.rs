@@ -561,4 +561,12 @@ mod tests {
         let err = parse_message("<39>1 2018-05-15T20:56:58+00:00 -web1west -").expect_err("should fail");
         assert_eq!(mem::discriminant(&err), mem::discriminant(&ParseErr::UnexpectedEndOfInput));
     }
+
+    #[test]
+    fn test_fastly() {
+        let msg = parse_message(r#"<134>2020-05-11T04:23:54Z cache-dfw18663 rtyler[477321]: 108.197.232.51 "-" "-" [11/May/2020:04:23:52 +0000] "GET / HTTP/1.1" 200 80141"#).expect("should parse");
+        assert_eq!(msg.hostname, Some("cache-dfw18663".to_string()));
+        assert_eq!(msg.appname, Some("rtyler[477321]".to_string()));
+        assert_eq!(msg.msg, r#"108.197.232.51 "-" "-" [11/May/2020:04:23:52 +0000] "GET / HTTP/1.1" 200 8014"#.to_string());
+    }
 }
